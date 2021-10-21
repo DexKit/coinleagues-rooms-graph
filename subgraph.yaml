@@ -1,0 +1,84 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: RoomFactory
+    network: matic
+    source:
+      address: "0xCd4Abb9D65825A0a031BDfc3CBdB0E9C7db2E11a"
+      abi: RoomFactory
+      startBlock: 20430282
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Game
+        - Player
+      abis:
+        - name: RoomFactory
+          file: ./abis/RoomFactory.json
+        - name: CoinLeaguesFactory
+          file: ./abis/CoinLeaguesFactory.json
+        - name: CoinLeagues
+          file: ./abis/CoinLeagues.json
+      eventHandlers:
+        - event: RoomCreated(indexed address,address)
+          handler: handleRoomCreated
+      file: ./src/mappings/mapping.ts
+templates:
+  - name: CoinLeagues
+    kind: ethereum/contract
+    network: matic
+    source:
+      abi: CoinLeagues
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/coinleagues.ts
+      entities:
+        - Game
+        - Player
+      abis:
+        - name: CoinLeagues
+          file: ./abis/CoinLeagues.json
+      eventHandlers:
+        - event: JoinedGame(address)
+          handler: handleJoinedGame
+        - event: StartedGame(uint256)
+          handler: handleStartedGame
+        - event: EndedGame(uint256)
+          handler: handleEndedGame
+        - event: AbortedGame(uint256)
+          handler: handleAbortedGame
+        - event: Claimed(address,uint256,uint256)
+          handler: handleClaimed
+        - event: Winned(address)
+          handler: handleWinned
+        - event: WinnedMultiple(address,address,address)
+          handler: handleWinnedMultiple
+  - name: CoinLeaguesFactory
+    kind: ethereum/contract
+    network: matic
+    source:
+      abi: CoinLeaguesFactory
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      file: ./src/mappings/coinleagueFactory.ts
+      entities:
+        - Game
+        - Player
+      abis:
+        - name: RoomFactory
+          file: ./abis/RoomFactory.json
+        - name: CoinLeaguesFactory
+          file: ./abis/CoinLeaguesFactory.json
+        - name: CoinLeagues
+          file: ./abis/CoinLeagues.json
+      eventHandlers:
+        - event: GameCreated(address,uint256)
+          handler: handleGameCreated

@@ -1,0 +1,71 @@
+
+enum GameStatus {
+  Waiting,
+  Started,
+  Ended,
+  Aborted,
+}
+
+enum GameType {
+ Bull,
+ Bear,
+}
+
+type PlayerGame @entity {
+  id: ID! # Set to `${game.id}-${player.id}`
+  player: Player!
+  game: Game!
+}
+
+
+
+type Game @entity {
+  id: ID!
+  createdAt: BigInt
+  startedAt: BigInt
+  intId: BigInt
+  type: GameType
+  duration: BigInt
+  endedAt: BigInt
+  abortedAt: BigInt
+  status: GameStatus!
+  currentPlayers: BigInt!
+  numPlayers: BigInt!
+  entry: BigInt!
+  numCoins: BigInt!
+  room: Room!
+  playerAddresses: [Bytes!]!
+  players: [PlayerGame!] @derivedFrom(field: "game")
+  earnings: [Earning!] @derivedFrom(field: "game")
+}
+
+
+type Player @entity {
+  id: ID!
+  totalWinnedGames: BigInt!
+  totalFirstWinnedGames: BigInt!
+  totalSecondWinnedGames: BigInt!
+  totalThirdWinnedGames: BigInt!
+  totalJoinedGames: BigInt! 
+  games: [PlayerGame!] @derivedFrom(field: "player")
+  totalEarned: BigInt
+}
+
+type Room @entity {
+  id: ID!
+  creator: Bytes!
+  createdAt: BigInt!
+  games: [Game!] @derivedFrom(field: "room")
+}
+
+
+
+type Earning @entity {
+  id: ID!
+  player: Player!
+  place: BigInt!
+  amount: BigInt
+  claimed: Boolean!
+  at: BigInt
+  game: Game!
+}
